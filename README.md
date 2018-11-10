@@ -22,4 +22,4 @@ descs <- sapply( lapply(aids[1:10], get.assay.desc), function(x) x$assay.desc )
 ## get assay summary for the first one
 get.assay.summary(aids[1])
 ```
-
+  
