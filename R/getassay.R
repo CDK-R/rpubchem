@@ -177,13 +177,16 @@ get.sids.by.aid <- function(aid, quiet=TRUE) {
   .ids.for.aid(aid,'sid', quiet)
 }
 get.assay <- function(aid, cid=NULL, sid=NULL, quiet=TRUE) {
+  if (!quiet) cat("Retrieving AID", aid, "\n")
   ## Lets see how many SID's we're going to pull down
   as <- get.assay.summary(aid)
   nsid <- as$SIDCountAll
   if (nsid > 8000 || !is.null(cid) || !is.null(sid)) {
+    if (!quiet) cat("Assay has", nsid, "SIDs so using chunks\n")
     if (!is.null(cid) && !is.null(sid)) cid <- NULL
     .getAssay(aid, cid=cid, sid=sid, quiet)
   } else {
+    if (!quiet) cat("Less than 8000 SIDs so retrieving assay in single pass")
     .getAssayDirect(aid, quiet)
   }
 }
@@ -202,10 +205,11 @@ get.assay <- function(aid, cid=NULL, sid=NULL, quiet=TRUE) {
     ## if no cid/sid was specified this means that the assay was too big to get
     ## in one go, so instead we'll be chunking all the cids
     ids <- .ids.for.aid(aid, 'cid', quiet)
+    if (0 %in% ids) ids <- ids[ids != 0]
     idtype <- 'cid'
   }
 
-  chunk.size <- 1000
+  chunk.size <- 500
   if (!quiet) cat("Will process AID", aid, "in", as.integer(length(ids)/chunk.size)+1, "chunks\n")
   it <- ihasNext(ichunk(ids, chunk.size))
   nchunk <- 1
