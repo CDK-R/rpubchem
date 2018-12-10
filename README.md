@@ -1,7 +1,7 @@
 Allows you to access [PubChem](https://pubchem.ncbi.nlm.nih.gov/) structures and bioassay data. The package supports retrieval of any AID (even primary screens, though this can be quite slow) or subsets of a screen by CID or SID. To install
 ```R
 library(devtools)
-install_github("rajarshi/cdkr", subdir="rpubchem", dependencies=TRUE)
+install_github("CDK-R/rpubchem", dependencies=TRUE)
 ```
 Once installed you can retrieve assays using the `get.assay` method:
 ```R
