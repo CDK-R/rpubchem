@@ -36,24 +36,34 @@
 
 
   ret <- lapply(sec$Information, function(info) {
-    info.name <- info$Name
+    if ("Name" %in% names(info))
+      info.name <- info$Name
+    else info.name <- ''
     if (info.name == n) info.name <- ''
+    
     val <- NA
-    if ("NumValue" %in% names(info)) val <- as.numeric(info$NumValue)
-    else if ("StringValue" %in% names(info)) val <- info$StringValue
-    else if ("BinaryValue" %in% names(info)) val <- info$BinaryValue
-    else if ("DateValue" %in% names(info)) val <- info$DateValue
-    else if ("Table" %in% names(info)) {
-      return(.handle.json.table(info$Table))
+    info.val <- info$Value
+    if ("Number" %in% names(info.val)) {
+      val <- as.numeric(info.val$Number)
+    }
+    else if ("StringWithMarkup" %in% names(info.val)) {
+      elems <- info.val$StringWithMarkup ## Note we just take the first value even if there are multiple
+      val <- elems[[1]][['String']]
+    }
+    else if ("Binary" %in% names(info.val)) val <- info$BinaryValue
+    else if ("DateValue" %in% names(info.val)) val <- info$DateValue
+    else if ("Table" %in% names(info.val)) {
+      return(.handle.json.table(info.val$Table))
     }
     ret <- data.frame(val=val, stringsAsFactors=FALSE)
-    if (info.name != '') {
+    if (info.name != '' & info.name != "XLogP3-AA") {
       names(ret) <- sprintf("%s.%s", n, info.name)
     } else {
       names(ret) <- n
     }
     return(ret)
   })
+  
   return(ret)
 }
 

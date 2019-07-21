@@ -145,16 +145,17 @@ get.cid <- function(cid, quiet=TRUE) {
     return(NULL)
   }
   
+  propnames <- c("Molecular Weight", "XLogP3", "Hydrogen Bond Donor Count",
+                 "Hydrogen Bond Acceptor Count", "Rotatable Bond Count",
+                 "Exact Mass", "Monoisotopic Mass", "Topological Polar Surface Area",
+                 "Heavy Atom Count", "Formal Charge", "Complexity")
   computed <- .section.by.heading(props$Section, "Computed Properties")
-  cvals <- lapply(list(computed), .section.handler,
-                  ignore= c(##"CACTVS Substructure Key Fingerprint",
-                    "Compound Is Canonicalized",
-                    "Covalently-Bonded Unit Count"))
-  cvals <- do.call(cbind, as.list(unlist(Filter(function(x) !is.null(x), cvals), recursive=FALSE)))
-  cols2remove <- which(names(cvals) %in% c("Compound Is Canonicalized",
-                                           "Covalently-Bonded Unit Count"))
-  cvals <- cvals[,-cols2remove]
-  
+  cvals <- lapply(propnames, function(x) {
+    sec <- .section.by.heading(computed$Section, x)
+    return(unlist(.section.handler(sec)))
+  })
+  cvals <- data.frame(t(sapply(cvals,c)))
+
   experimental <- .section.by.heading(props$Section, "Experimental Properties")
   if (is.null(experimental)) {
     evals <- data.frame(pKa=NA,"Kovats Retention Index"=NA)
