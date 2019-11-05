@@ -100,5 +100,5 @@ get.synonyms <- function(name, idtype = NULL, quiet=TRUE)
   # Cleanup
   rm(curlHandle)
   gc()
-  out
+  return(out)
 }
